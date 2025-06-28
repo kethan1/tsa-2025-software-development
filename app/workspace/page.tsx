@@ -10,9 +10,9 @@ export default function WorkspacePage() {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Tool Palette */}
-        <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+        {/* <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
           <ToolPalette />
-        </div>
+        </div> */}
 
         {/* Main Canvas */}
         <div className="flex-1 relative">

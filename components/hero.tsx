@@ -45,7 +45,7 @@ export function Hero() {
               </div>
               <h3 className="font-semibold mb-2">Real Land Simulation</h3>
               <p className="text-sm text-muted-foreground">
-                Upload GIS data or draw your plot to test regenerative strategies
+                Upload GIS data to test regenerative strategies on real land
               </p>
             </div>
             <div className="flex flex-col items-center">

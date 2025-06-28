@@ -20,24 +20,6 @@ export function WorkspaceHeader() {
     })
   }
 
-  const handleShare = () => {
-    // Simulate sharing functionality
-    if (navigator.share) {
-      navigator.share({
-        title: "My Farm Project",
-        text: "Check out my regenerative farm design on VerdeCore!",
-        url: window.location.href,
-      })
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(window.location.href)
-      toast({
-        title: "Link Copied",
-        description: "Project link has been copied to clipboard.",
-      })
-    }
-  }
-
   const handleSimulate = () => {
     setIsSimulating(true)
     setIsPaused(false)
@@ -104,11 +86,6 @@ export function WorkspaceHeader() {
           <Button variant="outline" size="sm" onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
             Save
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={handleShare}>
-            <Share2 className="w-4 h-4 mr-2" />
-            Share
           </Button>
 
           <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2" />

@@ -6,7 +6,7 @@ const steps = [
   {
     icon: Upload,
     title: "Import Your Land",
-    description: "Upload GIS data, drone footage, or draw your plot directly on the canvas",
+    description: "Upload GIS data or import drone footage to get started",
     color: "bg-blue-500",
   },
   {

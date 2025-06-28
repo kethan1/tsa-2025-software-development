@@ -6,10 +6,10 @@ const features = [
   {
     icon: Paintbrush,
     title: "LandCanvas™",
-    subtitle: "Draw, Import, or Scan Your Real Land",
+    subtitle: "Import or Scan Your Real Land",
     description:
-      "Upload GIS coordinates, import drone footage, or sketch a shape. AI classifies zones and provides context-aware tools.",
-    badge: "Interactive Drawing",
+      "Upload GIS coordinates or import drone footage. AI classifies zones and provides context-aware tools.",
+    badge: "Data Import",
     color: "bg-blue-500",
   },
   {
