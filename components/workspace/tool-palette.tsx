@@ -1,6 +1,10 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { TreePine, Wheat, Droplets, Bug } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 const toolCategories = [
   {
@@ -42,6 +46,24 @@ const toolCategories = [
 ]
 
 export function ToolPalette() {
+  const [selectedTool, setSelectedTool] = useState<string | null>(null)
+  const { toast } = useToast()
+
+  const handleToolClick = (toolName: string, categoryTitle: string) => {
+    setSelectedTool(toolName)
+    toast({
+      title: "Tool Selected",
+      description: `"${toolName}" from ${categoryTitle} is now active. Click on the canvas to place it.`,
+    })
+  }
+
+  const handleToolDrag = (toolName: string, categoryTitle: string) => {
+    toast({
+      title: "Tool Dragged",
+      description: `Dragging "${toolName}" from ${categoryTitle} to canvas...`,
+    })
+  }
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -60,7 +82,12 @@ export function ToolPalette() {
             {category.tools.map((tool, toolIndex) => (
               <Card
                 key={toolIndex}
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
+                  selectedTool === tool.name ? 'ring-2 ring-green-500 bg-green-50 dark:bg-green-950' : ''
+                }`}
+                onClick={() => handleToolClick(tool.name, category.title)}
+                draggable
+                onDragStart={() => handleToolDrag(tool.name, category.title)}
               >
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">

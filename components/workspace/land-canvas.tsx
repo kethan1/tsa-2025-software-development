@@ -1,15 +1,67 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Upload, MousePointer, Square, Circle } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export function LandCanvas() {
   const [selectedTool, setSelectedTool] = useState("pointer")
+  const [isDrawing, setIsDrawing] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
+
+  const handleImportGISData = () => {
+    toast({
+      title: "Import GIS Data",
+      description: "Opening GIS data import dialog...",
+    })
+    // Simulate GIS data import
+    setTimeout(() => {
+      toast({
+        title: "GIS Data Imported",
+        description: "Successfully imported land parcel data.",
+      })
+    }, 2000)
+  }
+
+  const handleUploadFile = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    }
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      toast({
+        title: "File Uploaded",
+        description: `Successfully uploaded ${file.name}`,
+      })
+      // Here you would process the file (image, drone footage, etc.)
+    }
+  }
+
+  const handleDrawPlot = () => {
+    setIsDrawing(!isDrawing)
+    toast({
+      title: isDrawing ? "Drawing Mode Disabled" : "Drawing Mode Enabled",
+      description: isDrawing ? "Click and drag to draw your plot boundaries." : "Drawing mode activated.",
+    })
+  }
 
   return (
     <div className="h-full relative bg-green-50 dark:bg-green-950">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,.geojson,.shp,.kml"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       {/* Canvas Controls */}
       <div className="absolute top-4 left-4 z-10 flex gap-2">
         <Button
@@ -37,7 +89,7 @@ export function LandCanvas() {
 
       {/* Import Options */}
       <div className="absolute top-4 right-4 z-10">
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleImportGISData}>
           <Upload className="w-4 h-4 mr-2" />
           Import GIS Data
         </Button>
@@ -54,9 +106,15 @@ export function LandCanvas() {
                 Upload GIS data, import drone footage, or draw your plot
               </p>
               <div className="flex gap-2 justify-center">
-                <Button size="sm">Upload File</Button>
-                <Button size="sm" variant="outline">
-                  Draw Plot
+                <Button size="sm" onClick={handleUploadFile}>
+                  Upload File
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={handleDrawPlot}
+                >
+                  {isDrawing ? "Stop Drawing" : "Draw Plot"}
                 </Button>
               </div>
             </div>
@@ -73,7 +131,7 @@ export function LandCanvas() {
       {/* Cursor Feedback */}
       <div className="absolute bottom-4 left-4 z-10">
         <Badge variant="outline" className="bg-white/90 dark:bg-gray-800/90">
-          Tool: {selectedTool} | Click to place elements
+          Tool: {selectedTool} | {isDrawing ? "Drawing mode active" : "Click to place elements"}
         </Badge>
       </div>
     </div>

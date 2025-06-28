@@ -1,8 +1,12 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Star, Download, Eye, Heart } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 const strategies = [
   {
@@ -35,6 +39,24 @@ const strategies = [
 ]
 
 export function CommunityShowcase() {
+  const { toast } = useToast()
+
+  const handleViewAndRemix = (strategyTitle: string) => {
+    toast({
+      title: "Opening Strategy",
+      description: `Loading "${strategyTitle}" for viewing and remixing...`,
+    })
+    // Here you would navigate to the strategy detail page
+  }
+
+  const handleExploreAllStrategies = () => {
+    toast({
+      title: "Explore All Strategies",
+      description: "Loading complete strategy library...",
+    })
+    // Here you would navigate to the full community page
+  }
+
   return (
     <section className="py-24 bg-white dark:bg-gray-950">
       <div className="container mx-auto px-4">
@@ -96,7 +118,11 @@ export function CommunityShowcase() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-transparent" variant="outline">
+                <Button 
+                  className="w-full bg-transparent" 
+                  variant="outline"
+                  onClick={() => handleViewAndRemix(strategy.title)}
+                >
                   View & Remix
                 </Button>
               </CardContent>
@@ -105,7 +131,11 @@ export function CommunityShowcase() {
         </div>
 
         <div className="text-center">
-          <Button size="lg" variant="outline">
+          <Button 
+            size="lg" 
+            variant="outline"
+            onClick={handleExploreAllStrategies}
+          >
             Explore All Strategies
           </Button>
         </div>

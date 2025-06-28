@@ -1,8 +1,13 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Star, Download, Eye, Heart, MessageCircle } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 const strategies = [
   {
@@ -90,11 +95,47 @@ const strategies = [
 ]
 
 export function StrategyGrid() {
+  const [likedStrategies, setLikedStrategies] = useState<Set<number>>(new Set())
+  const { toast } = useToast()
+
+  const handleViewAll = () => {
+    toast({
+      title: "View All Strategies",
+      description: "Loading complete strategy library...",
+    })
+  }
+
+  const handleViewAndRemix = (strategyId: number, strategyTitle: string) => {
+    toast({
+      title: "Opening Strategy",
+      description: `Loading "${strategyTitle}" for viewing and remixing...`,
+    })
+    // Here you would navigate to the strategy detail page
+  }
+
+  const handleLike = (strategyId: number, strategyTitle: string) => {
+    const newLikedStrategies = new Set(likedStrategies)
+    if (newLikedStrategies.has(strategyId)) {
+      newLikedStrategies.delete(strategyId)
+      toast({
+        title: "Strategy Unliked",
+        description: `Removed "${strategyTitle}" from your favorites.`,
+      })
+    } else {
+      newLikedStrategies.add(strategyId)
+      toast({
+        title: "Strategy Liked",
+        description: `Added "${strategyTitle}" to your favorites.`,
+      })
+    }
+    setLikedStrategies(newLikedStrategies)
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">Featured Strategies</h2>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleViewAll}>
           View All
         </Button>
       </div>
@@ -172,11 +213,19 @@ export function StrategyGrid() {
               </div>
 
               <div className="flex gap-2">
-                <Button className="flex-1" size="sm">
+                <Button 
+                  className="flex-1" 
+                  size="sm"
+                  onClick={() => handleViewAndRemix(strategy.id, strategy.title)}
+                >
                   View & Remix
                 </Button>
-                <Button variant="outline" size="sm">
-                  <Heart className="w-4 h-4" />
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleLike(strategy.id, strategy.title)}
+                >
+                  <Heart className={`w-4 h-4 ${likedStrategies.has(strategy.id) ? 'fill-red-500 text-red-500' : ''}`} />
                 </Button>
               </div>
             </CardContent>

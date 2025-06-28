@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -5,8 +8,61 @@ import { Slider } from "@/components/ui/slider"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, TrendingUp, Droplets, Leaf, Bug, BarChart3, Eye, Download } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export function SimulationPanel() {
+  const [isSplitView, setIsSplitView] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [currentYear, setCurrentYear] = useState(2030)
+  const { toast } = useToast()
+
+  const handleSplitView = () => {
+    setIsSplitView(!isSplitView)
+    toast({
+      title: isSplitView ? "Single View" : "Split View",
+      description: isSplitView ? "Switched to single view mode." : "Switched to split view mode.",
+    })
+  }
+
+  const handlePlayAnimation = () => {
+    setIsAnimating(!isAnimating)
+    toast({
+      title: isAnimating ? "Animation Paused" : "Animation Started",
+      description: isAnimating ? "Time progression paused." : "Playing time-based simulation...",
+    })
+  }
+
+  const handleGenerateActionPlan = () => {
+    toast({
+      title: "Action Plan Generated",
+      description: "Your detailed implementation plan is ready.",
+    })
+    // Simulate file download
+    const link = document.createElement('a')
+    link.href = '#'
+    link.download = 'verdecore-action-plan.pdf'
+    link.click()
+  }
+
+  const handleViewEarthMirror = () => {
+    toast({
+      title: "EarthMirror View",
+      description: "Opening satellite imagery overlay...",
+    })
+  }
+
+  const handleCreateDeploymentKit = () => {
+    toast({
+      title: "Deployment Kit Created",
+      description: "Complete implementation kit with supply lists and grant proposals generated.",
+    })
+    // Simulate file download
+    const link = document.createElement('a')
+    link.href = '#'
+    link.download = 'verdecore-deployment-kit.zip'
+    link.click()
+  }
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -28,17 +84,32 @@ export function SimulationPanel() {
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span>2025</span>
-              <span className="font-medium">2030</span>
+              <span className="font-medium">{currentYear}</span>
               <span>2045</span>
             </div>
-            <Slider defaultValue={[2030]} min={2025} max={2045} step={1} />
+            <Slider 
+              defaultValue={[2030]} 
+              min={2025} 
+              max={2045} 
+              step={1} 
+              onValueChange={(value) => setCurrentYear(value[0])}
+            />
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="flex-1 bg-transparent">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex-1 bg-transparent"
+                onClick={handleSplitView}
+              >
                 <Eye className="w-4 h-4 mr-1" />
-                Split View
+                {isSplitView ? "Single View" : "Split View"}
               </Button>
-              <Button size="sm" className="flex-1">
-                Play Animation
+              <Button 
+                size="sm" 
+                className="flex-1"
+                onClick={handlePlayAnimation}
+              >
+                {isAnimating ? "Pause Animation" : "Play Animation"}
               </Button>
             </div>
           </div>
@@ -156,12 +227,20 @@ export function SimulationPanel() {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <Button className="w-full bg-transparent" variant="outline">
+        <Button 
+          className="w-full bg-transparent" 
+          variant="outline"
+          onClick={handleGenerateActionPlan}
+        >
           <Download className="w-4 h-4 mr-2" />
           Generate Action Plan
         </Button>
 
-        <Button className="w-full bg-transparent" variant="outline">
+        <Button 
+          className="w-full bg-transparent" 
+          variant="outline"
+          onClick={handleViewEarthMirror}
+        >
           <Eye className="w-4 h-4 mr-2" />
           View EarthMirror
         </Button>
@@ -172,7 +251,11 @@ export function SimulationPanel() {
             <p className="text-xs text-muted-foreground mb-3">
               Generate your complete implementation kit with supply lists and grant proposals.
             </p>
-            <Button size="sm" className="w-full">
+            <Button 
+              size="sm" 
+              className="w-full"
+              onClick={handleCreateDeploymentKit}
+            >
               Create Deployment Kit
             </Button>
           </CardContent>
