@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Upload, Map, Layers, ZoomIn, ZoomOut, RotateCw, MousePointer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSimulation } from "./simulation-context";
 
 interface GISData {
   type: string;
@@ -120,6 +121,7 @@ export function LandCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+  const { setVideoRef } = useSimulation();
   
   const [gisData, setGisData] = useState<GISData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -137,6 +139,12 @@ export function LandCanvas() {
     duration: 0,
     showVideo: false,
   });
+
+  // Register video ref with simulation context
+  useEffect(() => {
+    setVideoRef(videoRef);
+    return () => setVideoRef(null);
+  }, [setVideoRef]);
 
   const handleImportGISData = () => {
     fileInputRef.current?.click();
@@ -901,26 +909,7 @@ export function LandCanvas() {
                 Your browser does not support the video tag.
               </video>
               
-              {/* Time Slider on the Right */}
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-lg p-4">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="text-white text-sm font-medium">Time</div>
-                  <div className="h-64 w-4">
-                    <Slider
-                      value={[videoState.currentTime]}
-                      onValueChange={handleTimeSliderChange}
-                      max={videoState.duration || 100}
-                      min={0}
-                      step={0.1}
-                      orientation="vertical"
-                      className="h-full"
-                    />
-                  </div>
-                  <div className="text-white text-xs text-center">
-                    {formatTime(videoState.currentTime)}
-                  </div>
-                </div>
-              </div>
+              
               
               {/* Import New Data Button */}
               <div className="absolute top-4 left-4">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,12 +9,48 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, TrendingUp, Droplets, Leaf, Bug, BarChart3, Eye, Download } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useSimulation } from "./simulation-context"
 
 export function SimulationPanel() {
   const [isSplitView, setIsSplitView] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [currentYear, setCurrentYear] = useState(2030)
+  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef } = useSimulation()
   const { toast } = useToast()
+
+  // Update video time when slider changes
+  useEffect(() => {
+    if (videoRef?.current && !isPlaying) {
+      const yearProgress = (currentYear - 2025) / 20 // 20 years from 2025 to 2045
+      const newTime = yearProgress * (videoRef.current.duration || 20)
+      videoRef.current.currentTime = newTime
+    }
+  }, [currentYear, videoRef, isPlaying])
+
+  // Auto-advance year when playing
+  useEffect(() => {
+    if (isPlaying && videoRef?.current) {
+      const interval = setInterval(() => {
+        if (videoRef.current && !videoRef.current.paused) {
+          const currentTime = videoRef.current.currentTime
+          const duration = videoRef.current.duration || 20
+          const yearProgress = currentTime / duration
+          const newYear = 2025 + Math.round(yearProgress * 20)
+          setCurrentYear(newYear)
+          
+          if (currentTime >= duration) {
+            setIsPlaying(false)
+            setIsAnimating(false)
+          }
+        }
+      }, 100)
+
+      return () => clearInterval(interval)
+    }
+  }, [isPlaying, videoRef, setCurrentYear, setIsPlaying, setIsAnimating])
+
+  const handleSliderChange = (value: number[]) => {
+    setCurrentYear(value[0])
+  }
 
   const handleSplitView = () => {
     setIsSplitView(!isSplitView)
@@ -25,11 +61,30 @@ export function SimulationPanel() {
   }
 
   const handlePlayAnimation = () => {
-    setIsAnimating(!isAnimating)
-    toast({
-      title: isAnimating ? "Animation Paused" : "Animation Started",
-      description: isAnimating ? "Time progression paused." : "Playing time-based simulation...",
-    })
+    if (videoRef?.current) {
+      if (isPlaying) {
+        videoRef.current.pause()
+        setIsPlaying(false)
+        setIsAnimating(false)
+        toast({
+          title: "Animation Paused",
+          description: "Time progression paused.",
+        })
+      } else {
+        videoRef.current.play()
+        setIsPlaying(true)
+        setIsAnimating(true)
+        toast({
+          title: "Animation Started",
+          description: "Playing time-based simulation...",
+        })
+      }
+    } else {
+      toast({
+        title: "No Video Available",
+        description: "Please import GIS data to start simulation.",
+      })
+    }
   }
 
   const handleGenerateActionPlan = () => {
@@ -88,11 +143,12 @@ export function SimulationPanel() {
               <span>2045</span>
             </div>
             <Slider 
-              defaultValue={[2030]} 
+              value={[currentYear]} 
               min={2025} 
               max={2045} 
               step={1} 
-              onValueChange={(value) => setCurrentYear(value[0])}
+              onValueChange={handleSliderChange}
+              disabled={isPlaying}
             />
             <div className="flex gap-2">
               <Button 
