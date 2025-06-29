@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { Upload, Map, Layers, ZoomIn, ZoomOut, RotateCw, MousePointer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,6 +24,13 @@ interface CanvasState {
   panX: number;
   panY: number;
   rotation: number;
+}
+
+interface VideoState {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  showVideo: boolean;
 }
 
 // Enhanced color scheme for more realistic appearance
@@ -110,6 +118,7 @@ const featureColors = {
 export function LandCanvas() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
   
   const [gisData, setGisData] = useState<GISData | null>(null);
@@ -121,6 +130,12 @@ export function LandCanvas() {
     panX: 0,
     panY: 0,
     rotation: 0,
+  });
+  const [videoState, setVideoState] = useState<VideoState>({
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+    showVideo: false,
   });
 
   const handleImportGISData = () => {
@@ -153,7 +168,7 @@ export function LandCanvas() {
         parsedData = parseGeoJSON(content);
       } else if (file.name.toLowerCase().endsWith('.kml')) {
         // Basic KML parsing - in a real app you'd use a proper KML parser
-    toast({
+        toast({
           title: "KML Support",
           description: "KML files are supported but require additional parsing libraries.",
         });
@@ -163,6 +178,8 @@ export function LandCanvas() {
       }
 
       setGisData(parsedData);
+      setVideoState(prev => ({ ...prev, showVideo: true }));
+      
       toast({
         title: "GIS Data Imported",
         description: `Successfully imported ${parsedData.features?.length || 1} feature(s) from ${file.name}`,
@@ -209,6 +226,40 @@ export function LandCanvas() {
       ...prev,
       zoom: Math.max(0.1, Math.min(5, prev.zoom * zoomFactor)),
     }));
+  };
+
+  // Video control functions
+  const handleVideoTimeUpdate = () => {
+    if (videoRef.current) {
+      setVideoState(prev => ({
+        ...prev,
+        currentTime: videoRef.current!.currentTime,
+        duration: videoRef.current!.duration,
+      }));
+    }
+  };
+
+  const handleVideoLoadedMetadata = () => {
+    if (videoRef.current) {
+      setVideoState(prev => ({
+        ...prev,
+        duration: videoRef.current!.duration,
+      }));
+    }
+  };
+
+  const handleTimeSliderChange = (value: number[]) => {
+    if (videoRef.current) {
+      const newTime = value[0];
+      videoRef.current.currentTime = newTime;
+      setVideoState(prev => ({ ...prev, currentTime: newTime }));
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const getFeatureStyle = (featureType: string) => {
@@ -802,24 +853,24 @@ export function LandCanvas() {
       {/* Canvas Area */}
       <div className="h-full relative">
         {!gisData ? (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-96 h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center mb-4 bg-white/50 dark:bg-gray-800/50">
+          <div className="h-full flex items-center justify-center">
             <div className="text-center">
+              <div className="w-96 h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center mb-4 bg-white/50 dark:bg-gray-800/50">
+                <div className="text-center">
                   <Map className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">
-                Start Importing Your Land
-              </h3>
-              <div className="flex gap-2 justify-center">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleImportGISData}
+                  <h3 className="text-lg font-medium mb-2">
+                    Start Importing Your Land
+                  </h3>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleImportGISData}
                       disabled={isLoading}
-                >
-                  <Upload className="w-4 h-4 mr-2" />
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
                       {isLoading ? "Importing..." : "Import GIS Data"}
-                </Button>
+                    </Button>
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
                     Supports GeoJSON, KML files
@@ -831,6 +882,74 @@ export function LandCanvas() {
               </div>
             </div>
           </div>
+        ) : videoState.showVideo ? (
+          <>
+            {/* Video Player */}
+            <div className="h-full relative">
+              <video
+                ref={videoRef}
+                className="w-full h-full object-contain rounded-lg"
+                onTimeUpdate={handleVideoTimeUpdate}
+                onLoadedMetadata={handleVideoLoadedMetadata}
+                onPlay={() => setVideoState(prev => ({ ...prev, isPlaying: true }))}
+                onPause={() => setVideoState(prev => ({ ...prev, isPlaying: false }))}
+                autoPlay
+                muted
+                loop
+              >
+                <source src="/video.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              
+              {/* Time Slider on the Right */}
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-lg p-4">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="text-white text-sm font-medium">Time</div>
+                  <div className="h-64 w-4">
+                    <Slider
+                      value={[videoState.currentTime]}
+                      onValueChange={handleTimeSliderChange}
+                      max={videoState.duration || 100}
+                      min={0}
+                      step={0.1}
+                      orientation="vertical"
+                      className="h-full"
+                    />
+                  </div>
+                  <div className="text-white text-xs text-center">
+                    {formatTime(videoState.currentTime)}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Import New Data Button */}
+              <div className="absolute top-4 left-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleImportGISData}
+                  disabled={isLoading}
+                  className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import New Data
+                </Button>
+              </div>
+              
+              {/* Show Canvas Button */}
+              <div className="absolute top-4 right-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setVideoState(prev => ({ ...prev, showVideo: false }))}
+                  className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+                >
+                  <Map className="w-4 h-4 mr-2" />
+                  Show Canvas
+                </Button>
+              </div>
+            </div>
+          </>
         ) : (
           <>
             <canvas
@@ -886,13 +1005,26 @@ export function LandCanvas() {
               </Button>
             </div>
 
+            {/* Show Video Button */}
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setVideoState(prev => ({ ...prev, showVideo: true }))}
+                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+              >
+                <Layers className="w-4 h-4 mr-2" />
+                Show Video
+              </Button>
+            </div>
+
             {/* Instructions */}
             <div className="absolute bottom-4 right-4">
               <Badge variant="outline" className="bg-white/90 dark:bg-gray-800/90">
                 <MousePointer className="w-3 h-3 mr-1" />
                 Drag to pan, scroll to zoom
               </Badge>
-        </div>
+            </div>
           </>
         )}
       </div>
