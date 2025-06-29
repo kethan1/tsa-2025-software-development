@@ -1,0 +1,296 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Main Farm Boundary",
+        "type": "boundary",
+        "area_hectares": 25.5,
+        "soil_type": "Loam",
+        "land_use": "Agricultural"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4194, 37.7749],
+            [-122.4190, 37.7755],
+            [-122.4180, 37.7758],
+            [-122.4170, 37.7755],
+            [-122.4165, 37.7749],
+            [-122.4168, 37.7740],
+            [-122.4175, 37.7735],
+            [-122.4185, 37.7732],
+            [-122.4194, 37.7749]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Oak Tree Grove",
+        "type": "tree_cluster",
+        "species": "Quercus",
+        "age_years": 45,
+        "count": 12
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4188, 37.7752],
+            [-122.4185, 37.7754],
+            [-122.4182, 37.7753],
+            [-122.4183, 37.7750],
+            [-122.4186, 37.7749],
+            [-122.4188, 37.7752]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Willow Creek",
+        "type": "stream",
+        "width_meters": 3.5,
+        "depth_meters": 0.8,
+        "flow_rate": "moderate"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-122.4192, 37.7756],
+          [-122.4188, 37.7754],
+          [-122.4182, 37.7752],
+          [-122.4178, 37.7750],
+          [-122.4174, 37.7748],
+          [-122.4170, 37.7746]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pond",
+        "type": "water_body",
+        "area_hectares": 0.8,
+        "depth_meters": 2.5,
+        "water_type": "fresh"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4172, 37.7742],
+            [-122.4168, 37.7744],
+            [-122.4165, 37.7742],
+            [-122.4167, 37.7739],
+            [-122.4170, 37.7738],
+            [-122.4172, 37.7742]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Farm House",
+        "type": "building",
+        "area_sqm": 180,
+        "year_built": 1985
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4180, 37.7740],
+            [-122.4178, 37.7740],
+            [-122.4178, 37.7738],
+            [-122.4180, 37.7738],
+            [-122.4180, 37.7740]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Barn",
+        "type": "building",
+        "area_sqm": 300,
+        "year_built": 1990
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4175, 37.7735],
+            [-122.4172, 37.7735],
+            [-122.4172, 37.7732],
+            [-122.4175, 37.7732],
+            [-122.4175, 37.7735]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Apple Orchard",
+        "type": "orchard",
+        "species": "Malus domestica",
+        "count": 45,
+        "age_years": 8
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4185, 37.7745],
+            [-122.4180, 37.7748],
+            [-122.4175, 37.7746],
+            [-122.4178, 37.7742],
+            [-122.4182, 37.7741],
+            [-122.4185, 37.7745]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hedgerow",
+        "type": "hedge",
+        "species": "Mixed native shrubs",
+        "length_meters": 120
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-122.4185, 37.7735],
+          [-122.4180, 37.7733],
+          [-122.4175, 37.7731],
+          [-122.4170, 37.7729]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Wetland Area",
+        "type": "wetland",
+        "area_hectares": 1.2,
+        "vegetation": "Cattails, sedges"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.4168, 37.7738],
+            [-122.4164, 37.7740],
+            [-122.4160, 37.7738],
+            [-122.4162, 37.7735],
+            [-122.4166, 37.7734],
+            [-122.4168, 37.7738]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rock Outcrop",
+        "type": "geological",
+        "height_meters": 2.5,
+        "rock_type": "Granite"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.4182, 37.7756]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Large Oak Tree",
+        "type": "tree",
+        "species": "Quercus robur",
+        "age_years": 85,
+        "height_meters": 25,
+        "trunk_diameter_cm": 120
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.4186, 37.7750]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Maple Tree",
+        "type": "tree",
+        "species": "Acer saccharum",
+        "age_years": 35,
+        "height_meters": 18,
+        "trunk_diameter_cm": 45
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.4178, 37.7744]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pine Tree",
+        "type": "tree",
+        "species": "Pinus ponderosa",
+        "age_years": 22,
+        "height_meters": 15,
+        "trunk_diameter_cm": 35
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.4172, 37.7746]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Access Road",
+        "type": "road",
+        "width_meters": 4,
+        "surface": "gravel"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-122.4190, 37.7745],
+          [-122.4185, 37.7742],
+          [-122.4180, 37.7739],
+          [-122.4175, 37.7736]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fence Line",
+        "type": "fence",
+        "material": "wood",
+        "height_meters": 1.5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-122.4194, 37.7749],
+          [-122.4190, 37.7755],
+          [-122.4180, 37.7758]
+        ]
+      }
+    }
+  ]
+} 
