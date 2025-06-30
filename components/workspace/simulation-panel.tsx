@@ -1,127 +1,132 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Slider } from "@/components/ui/slider"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, TrendingUp, Droplets, Leaf, Bug, BarChart3, Eye, Download } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { useSimulation } from "./simulation-context"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Calendar,
+  TrendingUp,
+  Droplets,
+  Leaf,
+  Bug,
+  BarChart3,
+  Eye,
+  Download,
+  Play,
+  Pause,
+  RotateCcw,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useSimulation } from "./simulation-context";
 
 export function SimulationPanel() {
-  const [isSplitView, setIsSplitView] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef } = useSimulation()
-  const { toast } = useToast()
+  const [isAnimating, setIsAnimating] = useState(false);
+  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef } =
+    useSimulation();
+  const { toast } = useToast();
 
   // Update video time when slider changes
   useEffect(() => {
     if (videoRef?.current && !isPlaying) {
-      const yearProgress = (currentYear - 2025) / 20 // 20 years from 2025 to 2045
-      const newTime = yearProgress * (videoRef.current.duration || 20)
-      videoRef.current.currentTime = newTime
+      const yearProgress = (currentYear - 2025) / 20; // 20 years from 2025 to 2045
+      const newTime = yearProgress * (videoRef.current.duration || 20);
+      videoRef.current.currentTime = newTime;
     }
-  }, [currentYear, videoRef, isPlaying])
+  }, [currentYear, videoRef, isPlaying]);
 
   // Auto-advance year when playing
   useEffect(() => {
     if (isPlaying && videoRef?.current) {
       const interval = setInterval(() => {
         if (videoRef.current && !videoRef.current.paused) {
-          const currentTime = videoRef.current.currentTime
-          const duration = videoRef.current.duration || 20
-          const yearProgress = currentTime / duration
-          const newYear = 2025 + Math.round(yearProgress * 20)
-          setCurrentYear(newYear)
-          
+          const currentTime = videoRef.current.currentTime;
+          const duration = videoRef.current.duration || 20;
+          const yearProgress = currentTime / duration;
+          const newYear = 2025 + Math.round(yearProgress * 20);
+          setCurrentYear(newYear);
+
           if (currentTime >= duration) {
-            setIsPlaying(false)
-            setIsAnimating(false)
+            setIsPlaying(false);
+            setIsAnimating(false);
           }
         }
-      }, 100)
+      }, 100);
 
-      return () => clearInterval(interval)
+      return () => clearInterval(interval);
     }
-  }, [isPlaying, videoRef, setCurrentYear, setIsPlaying, setIsAnimating])
+  }, [isPlaying, videoRef, setCurrentYear, setIsPlaying, setIsAnimating]);
 
   const handleSliderChange = (value: number[]) => {
-    setCurrentYear(value[0])
-  }
-
-  const handleSplitView = () => {
-    setIsSplitView(!isSplitView)
-    toast({
-      title: isSplitView ? "Single View" : "Split View",
-      description: isSplitView ? "Switched to single view mode." : "Switched to split view mode.",
-    })
-  }
+    setCurrentYear(value[0]);
+  };
 
   const handlePlayAnimation = () => {
     if (videoRef?.current) {
       if (isPlaying) {
-        videoRef.current.pause()
-        setIsPlaying(false)
-        setIsAnimating(false)
+        videoRef.current.pause();
+        setIsPlaying(false);
+        setIsAnimating(false);
         toast({
           title: "Animation Paused",
           description: "Time progression paused.",
-        })
+        });
       } else {
-        videoRef.current.play()
-        setIsPlaying(true)
-        setIsAnimating(true)
+        videoRef.current.play();
+        setIsPlaying(true);
+        setIsAnimating(true);
         toast({
           title: "Animation Started",
           description: "Playing time-based simulation...",
-        })
+        });
       }
     } else {
       toast({
         title: "No Video Available",
         description: "Please import GIS data to start simulation.",
-      })
+      });
     }
-  }
+  };
 
   const handleGenerateActionPlan = () => {
     toast({
       title: "Action Plan Generated",
       description: "Your detailed implementation plan is ready.",
-    })
+    });
     // Simulate file download
-    const link = document.createElement('a')
-    link.href = '#'
-    link.download = 'verdecore-action-plan.pdf'
-    link.click()
-  }
+    const link = document.createElement("a");
+    link.href = "#";
+    link.download = "verdecore-action-plan.pdf";
+    link.click();
+  };
 
   const handleViewEarthMirror = () => {
     toast({
       title: "EarthMirror View",
       description: "Opening satellite imagery overlay...",
-    })
-  }
+    });
+  };
 
   const handleCreateDeploymentKit = () => {
     toast({
       title: "Deployment Kit Created",
-      description: "Complete implementation kit with supply lists and grant proposals generated.",
-    })
+      description:
+        "Complete implementation kit with supply lists and grant proposals generated.",
+    });
     // Simulate file download
-    const link = document.createElement('a')
-    link.href = '#'
-    link.download = 'verdecore-deployment-kit.zip'
-    link.click()
-  }
+    const link = document.createElement("a");
+    link.href = "#";
+    link.download = "verdecore-deployment-kit.zip";
+    link.click();
+  };
 
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Regen Simulator</h2>
+        <h2 className="text-lg font-semibold mb-2">Simulator Options</h2>
         <p className="text-sm text-muted-foreground">
           Time-based forecasting engine powered by real environmental data
         </p>
@@ -142,30 +147,45 @@ export function SimulationPanel() {
               <span className="font-medium">{currentYear}</span>
               <span>2045</span>
             </div>
-            <Slider 
-              value={[currentYear]} 
-              min={2025} 
-              max={2045} 
-              step={1} 
+            <Slider
+              value={[currentYear]}
+              min={2025}
+              max={2045}
+              step={1}
               onValueChange={handleSliderChange}
               disabled={isPlaying}
             />
-            <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="flex-1 bg-transparent"
-                onClick={handleSplitView}
-              >
-                <Eye className="w-4 h-4 mr-1" />
-                {isSplitView ? "Single View" : "Split View"}
-              </Button>
-              <Button 
-                size="sm" 
+            <div className="flex justify-center gap-2">
+              {/* <Button
+                size="sm"
                 className="flex-1"
                 onClick={handlePlayAnimation}
               >
                 {isAnimating ? "Pause Animation" : "Play Animation"}
+              </Button> */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePlayAnimation}
+                // disabled={isSimulating && !isPaused}
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Simulate
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                // onClick={handlePause}
+                // disabled={!isSimulating}
+              >
+                <Pause className="w-4 h-4" />
+              </Button>
+
+              <Button variant="outline" size="sm"
+              // onClick={handleReset}
+              >
+                <RotateCcw className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -283,8 +303,8 @@ export function SimulationPanel() {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <Button 
-          className="w-full bg-transparent" 
+        <Button
+          className="w-full bg-transparent"
           variant="outline"
           onClick={handleGenerateActionPlan}
         >
@@ -292,8 +312,8 @@ export function SimulationPanel() {
           Generate Action Plan
         </Button>
 
-        <Button 
-          className="w-full bg-transparent" 
+        <Button
+          className="w-full bg-transparent"
           variant="outline"
           onClick={handleViewEarthMirror}
         >
@@ -305,10 +325,11 @@ export function SimulationPanel() {
           <CardContent className="p-4">
             <h4 className="font-medium text-sm mb-2">Ready to Deploy?</h4>
             <p className="text-xs text-muted-foreground mb-3">
-              Generate your complete implementation kit with supply lists and grant proposals.
+              Generate your complete implementation kit with supply lists and
+              grant proposals.
             </p>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="w-full"
               onClick={handleCreateDeploymentKit}
             >
@@ -318,5 +339,5 @@ export function SimulationPanel() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

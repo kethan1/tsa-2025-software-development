@@ -14,7 +14,7 @@ interface SimulationContextType {
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined)
 
 export function SimulationProvider({ children }: { children: ReactNode }) {
-  const [currentYear, setCurrentYear] = useState(2030)
+  const [currentYear, setCurrentYear] = useState(2025)
   const [isPlaying, setIsPlaying] = useState(false)
   const [videoRef, setVideoRef] = useState<RefObject<HTMLVideoElement> | null>(null)
 

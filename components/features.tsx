@@ -31,7 +31,7 @@ const features = [
   },
   {
     icon: PlayCircle,
-    title: "Regen Simulator",
+    title: "Simulation Options",
     subtitle: "Time-Based Forecasting Engine",
     description:
       "Watch your land transform through rainfall, biomass growth, soil carbon increase, and biodiversity changes.",
