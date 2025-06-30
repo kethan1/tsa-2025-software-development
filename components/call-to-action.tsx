@@ -1,10 +1,53 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Leaf, Users, Globe, Zap } from "lucide-react"
+import { Leaf, Users, Globe, Zap, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
+
+const stats = [
+  {
+    icon: Users,
+    value: "10,000+",
+    label: "Active Stewards",
+    description: "Farmers and ecologists worldwide",
+    action: "Join Community",
+  },
+  {
+    icon: Globe,
+    value: "50+",
+    label: "Countries",
+    description: "Global regenerative network",
+    action: "Explore Regions",
+  },
+  {
+    icon: Leaf,
+    value: "1M+",
+    label: "Acres Simulated",
+    description: "Land transformed through simulation",
+    action: "View Impact",
+  },
+  {
+    icon: Zap,
+    value: "500+",
+    label: "Strategies Shared",
+    description: "Community-driven solutions",
+    action: "Browse Strategies",
+  },
+]
 
 export function CallToAction() {
+  const { toast } = useToast()
+
+  const handleStatClick = (statLabel: string, action: string) => {
+    toast({
+      title: `${action}`,
+      description: `Opening ${statLabel} details...`,
+    })
+  }
+
   return (
     <section className="py-24 bg-gradient-to-br from-green-600 to-emerald-600 text-white">
       <div className="container mx-auto px-4">
@@ -37,37 +80,26 @@ export function CallToAction() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white/10 border-white/20 text-white">
-            <CardContent className="p-6 text-center">
-              <Users className="w-8 h-8 mx-auto mb-3 opacity-80" />
-              <h3 className="font-semibold mb-2">10,000+</h3>
-              <p className="text-sm opacity-80">Active Stewards</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/10 border-white/20 text-white">
-            <CardContent className="p-6 text-center">
-              <Globe className="w-8 h-8 mx-auto mb-3 opacity-80" />
-              <h3 className="font-semibold mb-2">50+</h3>
-              <p className="text-sm opacity-80">Countries</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/10 border-white/20 text-white">
-            <CardContent className="p-6 text-center">
-              <Leaf className="w-8 h-8 mx-auto mb-3 opacity-80" />
-              <h3 className="font-semibold mb-2">1M+</h3>
-              <p className="text-sm opacity-80">Acres Simulated</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/10 border-white/20 text-white">
-            <CardContent className="p-6 text-center">
-              <Zap className="w-8 h-8 mx-auto mb-3 opacity-80" />
-              <h3 className="font-semibold mb-2">500+</h3>
-              <p className="text-sm opacity-80">Strategies Shared</p>
-            </CardContent>
-          </Card>
+          {stats.map((stat, index) => (
+            <Card 
+              key={index} 
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 cursor-pointer group"
+              onClick={() => handleStatClick(stat.label, stat.action)}
+            >
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <stat.icon className="w-8 h-8 opacity-80 group-hover:scale-110 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                </div>
+                <h3 className="font-semibold mb-2 group-hover:text-green-200 transition-colors duration-300">{stat.value}</h3>
+                <p className="text-sm opacity-80 mb-2">{stat.label}</p>
+                <p className="text-xs opacity-60 mb-3">{stat.description}</p>
+                <div className="text-xs font-medium text-green-200 group-hover:text-green-100 transition-colors duration-300">
+                  {stat.action}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

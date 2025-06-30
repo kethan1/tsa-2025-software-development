@@ -831,8 +831,65 @@ export function LandCanvas() {
   };
 
   useEffect(() => {
-    renderGISData();
-  }, [gisData, canvasState]);
+    if (gisData) {
+      renderGISData()
+    }
+  }, [gisData, canvasState])
+
+  // Add keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return // Don't handle shortcuts when typing
+      }
+
+      switch (event.key) {
+        case 'i':
+        case 'I':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault()
+            handleImportGISData()
+          }
+          break
+        case 'v':
+        case 'V':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault()
+            setVideoState(prev => ({ ...prev, showVideo: !prev.showVideo }))
+          }
+          break
+        case 'c':
+        case 'C':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault()
+            setVideoState(prev => ({ ...prev, showVideo: false }))
+          }
+          break
+        case '=':
+        case '+':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault()
+            handleZoomIn()
+          }
+          break
+        case '-':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault()
+            handleZoomOut()
+          }
+          break
+        case '0':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault()
+            handleReset()
+          }
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   const handleZoomIn = () => {
     setCanvasState(prev => ({ ...prev, zoom: Math.min(prev.zoom * 1.2, 5) }));
@@ -923,6 +980,7 @@ export function LandCanvas() {
                   onClick={handleImportGISData}
                   disabled={isLoading}
                   className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+                  title="Import GIS Data (Ctrl/Cmd + I)"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Import New Data
@@ -936,6 +994,7 @@ export function LandCanvas() {
                   size="sm"
                   onClick={() => setVideoState(prev => ({ ...prev, showVideo: false }))}
                   className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+                  title="Show Canvas (Ctrl/Cmd + C)"
                 >
                   <Map className="w-4 h-4 mr-2" />
                   Show Canvas
@@ -964,6 +1023,7 @@ export function LandCanvas() {
                 size="sm"
                 onClick={handleZoomIn}
                 className="w-10 h-10 p-0"
+                title="Zoom In (Ctrl/Cmd + +)"
               >
                 <ZoomIn className="w-4 h-4" />
               </Button>
@@ -972,6 +1032,7 @@ export function LandCanvas() {
                 size="sm"
                 onClick={handleZoomOut}
                 className="w-10 h-10 p-0"
+                title="Zoom Out (Ctrl/Cmd + -)"
               >
                 <ZoomOut className="w-4 h-4" />
               </Button>
@@ -980,6 +1041,7 @@ export function LandCanvas() {
                 size="sm"
                 onClick={handleReset}
                 className="w-10 h-10 p-0"
+                title="Reset View (Ctrl/Cmd + 0)"
               >
                 <RotateCw className="w-4 h-4" />
               </Button>
@@ -992,6 +1054,7 @@ export function LandCanvas() {
                 size="sm"
                 onClick={handleImportGISData}
                 disabled={isLoading}
+                title="Import GIS Data (Ctrl/Cmd + I)"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Import New Data
@@ -1005,6 +1068,7 @@ export function LandCanvas() {
                 size="sm"
                 onClick={() => setVideoState(prev => ({ ...prev, showVideo: true }))}
                 className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+                title="Show Video (Ctrl/Cmd + V)"
               >
                 <Layers className="w-4 h-4 mr-2" />
                 Show Video

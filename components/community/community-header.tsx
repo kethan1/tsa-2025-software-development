@@ -11,6 +11,8 @@ import Link from "next/link"
 export function CommunityHeader() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [isTrending, setIsTrending] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [activeFilters, setActiveFilters] = useState<string[]>([])
   const { toast } = useToast()
 
   const handleFilter = () => {
@@ -26,6 +28,31 @@ export function CommunityHeader() {
     toast({
       title: isTrending ? "All Strategies" : "Trending Strategies",
       description: isTrending ? "Showing all strategies." : "Showing trending strategies.",
+    })
+  }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      toast({
+        title: "Search Results",
+        description: `Searching for "${searchQuery}" in strategies...`,
+      })
+    }
+  }
+
+  const handleFilterBadge = (filter: string) => {
+    const newFilters = activeFilters.includes(filter)
+      ? activeFilters.filter(f => f !== filter)
+      : [...activeFilters, filter]
+    
+    setActiveFilters(newFilters)
+    
+    toast({
+      title: "Filter Updated",
+      description: newFilters.length > 0 
+        ? `Filtering by: ${newFilters.join(", ")}`
+        : "Showing all strategies",
     })
   }
 
@@ -51,10 +78,15 @@ export function CommunityHeader() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search strategies, crops, regions..." className="pl-10" />
+            <Input 
+              placeholder="Search strategies, crops, regions..." 
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
           <div className="flex gap-2">
@@ -75,14 +107,44 @@ export function CommunityHeader() {
               Trending
             </Button>
           </div>
-        </div>
+        </form>
 
         <div className="flex gap-2 mt-4">
-          <Badge variant="secondary">All Regions</Badge>
-          <Badge variant="outline">Agroforestry</Badge>
-          <Badge variant="outline">Livestock</Badge>
-          <Badge variant="outline">Urban</Badge>
-          <Badge variant="outline">Permaculture</Badge>
+          <Badge 
+            variant={activeFilters.includes("All Regions") ? "default" : "outline"}
+            className="cursor-pointer hover:bg-primary/10"
+            onClick={() => handleFilterBadge("All Regions")}
+          >
+            All Regions
+          </Badge>
+          <Badge 
+            variant={activeFilters.includes("Agroforestry") ? "default" : "outline"}
+            className="cursor-pointer hover:bg-primary/10"
+            onClick={() => handleFilterBadge("Agroforestry")}
+          >
+            Agroforestry
+          </Badge>
+          <Badge 
+            variant={activeFilters.includes("Livestock") ? "default" : "outline"}
+            className="cursor-pointer hover:bg-primary/10"
+            onClick={() => handleFilterBadge("Livestock")}
+          >
+            Livestock
+          </Badge>
+          <Badge 
+            variant={activeFilters.includes("Urban") ? "default" : "outline"}
+            className="cursor-pointer hover:bg-primary/10"
+            onClick={() => handleFilterBadge("Urban")}
+          >
+            Urban
+          </Badge>
+          <Badge 
+            variant={activeFilters.includes("Permaculture") ? "default" : "outline"}
+            className="cursor-pointer hover:bg-primary/10"
+            onClick={() => handleFilterBadge("Permaculture")}
+          >
+            Permaculture
+          </Badge>
         </div>
       </div>
     </div>
