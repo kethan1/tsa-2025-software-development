@@ -121,7 +121,7 @@ export function LandCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
-  const { setVideoRef } = useSimulation();
+  const { setVideoRef, setVideoUploaded } = useSimulation();
   
   const [gisData, setGisData] = useState<GISData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -191,6 +191,7 @@ export function LandCanvas() {
 
       setGisData(parsedData);
       setVideoState(prev => ({ ...prev, showVideo: true }));
+      setVideoUploaded(true);
       
       toast({
         title: "GIS Data Imported",

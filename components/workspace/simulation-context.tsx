@@ -9,6 +9,8 @@ interface SimulationContextType {
   setIsPlaying: (playing: boolean) => void
   videoRef: RefObject<HTMLVideoElement> | null
   setVideoRef: (ref: RefObject<HTMLVideoElement> | null) => void
+  videoUploaded: boolean
+  setVideoUploaded: (uploaded: boolean) => void
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined)
@@ -17,6 +19,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [currentYear, setCurrentYear] = useState(2025)
   const [isPlaying, setIsPlaying] = useState(false)
   const [videoRef, setVideoRef] = useState<RefObject<HTMLVideoElement> | null>(null)
+  const [videoUploaded, setVideoUploaded] = useState(false)
 
   return (
     <SimulationContext.Provider value={{
@@ -25,7 +28,9 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
       isPlaying,
       setIsPlaying,
       videoRef,
-      setVideoRef
+      setVideoRef,
+      videoUploaded,
+      setVideoUploaded
     }}>
       {children}
     </SimulationContext.Provider>

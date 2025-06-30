@@ -28,7 +28,7 @@ export function SimulationPanel() {
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const animationRef = useRef<number | undefined>(undefined);
   const currentYearRef = useRef<number>(2025);
-  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef } = useSimulation();
+  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef, videoUploaded } = useSimulation();
   const { toast } = useToast();
 
   // Update video time when slider changes
@@ -204,226 +204,236 @@ export function SimulationPanel() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Regen Simulator</h2>
-        <p className="text-sm text-muted-foreground">
-          Time-based forecasting engine powered by real environmental data
-        </p>
-      </div>
-
-      {/* Time Controls */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            Time Slider
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span>2025</span>
-              <span className="font-medium">{currentYear}</span>
-              <span>2045</span>
-            </div>
-            <Slider
-              value={[currentYear]}
-              min={2025}
-              max={2045}
-              step={1}
-              onValueChange={handleSliderChange}
-              disabled={isPlaying && !isPaused}
-            />
-
-            {/* Control Buttons */}
-            <div className="flex justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePlaySimulation}
-                disabled={isPlaying && !isPaused}
-                title="Start Simulation"
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Simulate
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePauseSimulation}
-                disabled={!isPlaying}
-                title="Pause/Resume Simulation"
-              >
-                <Pause className="w-4 h-4" />
-              </Button>
-
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleStopSimulation}
-                title="Stop and Reset Simulation"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* Speed Controls */}
-            <div className="flex justify-center gap-1">
-              {[0.5, 1, 2, 4].map((speed) => (
-                <Button
-                  key={speed}
-                  variant={simulationSpeed === speed ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleSpeedChange(speed)}
-                  disabled={!isPlaying || isPaused}
-                  className="w-12 h-8 text-xs"
-                >
-                  {speed}x
-                </Button>
-              ))}
-            </div>
+    <div className="p-6 relative">
+      {!videoUploaded && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center pt-10 px-5 bg-gray-200/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg">
+          <div className="text-center">
+            <h2 className="text-lg font-semibold mb-2 text-gray-500 dark:text-gray-300">Simulation Options Unavailable</h2>
+            <p className="text-sm text-gray-400 mb-4">Upload your land video or GIS data to unlock simulation features.</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
+      <div className={videoUploaded ? '' : 'pointer-events-none opacity-50 select-none'}>
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-2">Simulation Options</h2>
+          <p className="text-sm text-muted-foreground">
+            Time-based forecasting engine powered by real environmental data
+          </p>
+        </div>
 
-      {/* Simulation Metrics */}
-      <Tabs defaultValue="environmental" className="mb-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="environmental">Environmental</TabsTrigger>
-          <TabsTrigger value="economic">Economic</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="environmental" className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Leaf className="w-4 h-4 text-green-500" />
-                Soil Carbon
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Current: 2.1%</span>
-                  <span className="text-green-600">+0.8% projected</span>
-                </div>
-                <Progress value={65} className="h-2" />
+        {/* Time Controls */}
+        <Card className="mb-6">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Time Slider
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between text-sm">
+                <span>2025</span>
+                <span className="font-medium">{currentYear}</span>
+                <span>2045</span>
               </div>
-            </CardContent>
-          </Card>
+              <Slider
+                value={[currentYear]}
+                min={2025}
+                max={2045}
+                step={1}
+                onValueChange={handleSliderChange}
+                disabled={isPlaying && !isPaused}
+              />
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Bug className="w-4 h-4 text-blue-500" />
-                Biodiversity Index
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Species Count: 45</span>
-                  <span className="text-green-600">+23 projected</span>
-                </div>
-                <Progress value={78} className="h-2" />
+              {/* Control Buttons */}
+              <div className="flex justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePlaySimulation}
+                  disabled={isPlaying && !isPaused}
+                  title="Start Simulation"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Simulate
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePauseSimulation}
+                  disabled={!isPlaying}
+                  title="Pause/Resume Simulation"
+                >
+                  <Pause className="w-4 h-4" />
+                </Button>
+
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleStopSimulation}
+                  title="Stop and Reset Simulation"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Droplets className="w-4 h-4 text-blue-500" />
-                Water Retention
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Infiltration Rate</span>
-                  <span className="text-green-600">+40% improvement</span>
-                </div>
-                <Progress value={85} className="h-2" />
+              {/* Speed Controls */}
+              <div className="flex justify-center gap-1">
+                {[0.5, 1, 2, 4].map((speed) => (
+                  <Button
+                    key={speed}
+                    variant={simulationSpeed === speed ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleSpeedChange(speed)}
+                    disabled={!isPlaying || isPaused}
+                    className="w-12 h-8 text-xs"
+                  >
+                    {speed}x
+                  </Button>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="economic" className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-green-500" />
-                Yield Projection
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Year 1: $2,400/acre</span>
-                  <span>Year 5: $4,800/acre</span>
-                </div>
-                <Progress value={60} className="h-2" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-purple-500" />
-                Input Reduction
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span>Fertilizer</span>
-                  <Badge variant="secondary">-60%</Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Pesticides</span>
-                  <Badge variant="secondary">-85%</Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Water</span>
-                  <Badge variant="secondary">-30%</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Action Buttons */}
-      <div className="space-y-3">
-        <Button
-          className="w-full bg-transparent"
-          variant="outline"
-          onClick={handleGenerateActionPlan}
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Generate Action Plan
-        </Button>
-
-        <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-4">
-            <h4 className="font-medium text-sm mb-2">Ready to Deploy?</h4>
-            <p className="text-xs text-muted-foreground mb-3">
-              Generate your complete implementation kit with supply lists and
-              grant proposals.
-            </p>
-            <Button
-              size="sm"
-              className="w-full"
-              onClick={handleCreateDeploymentKit}
-            >
-              Create Deployment Kit
-            </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Simulation Metrics */}
+        <Tabs defaultValue="environmental" className="mb-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="environmental">Environmental</TabsTrigger>
+            <TabsTrigger value="economic">Economic</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="environmental" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Leaf className="w-4 h-4 text-green-500" />
+                  Soil Carbon
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Current: 2.1%</span>
+                    <span className="text-green-600">+0.8% projected</span>
+                  </div>
+                  <Progress value={65} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Bug className="w-4 h-4 text-blue-500" />
+                  Biodiversity Index
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Species Count: 45</span>
+                    <span className="text-green-600">+23 projected</span>
+                  </div>
+                  <Progress value={78} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Droplets className="w-4 h-4 text-blue-500" />
+                  Water Retention
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Infiltration Rate</span>
+                    <span className="text-green-600">+40% improvement</span>
+                  </div>
+                  <Progress value={85} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="economic" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  Yield Projection
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Year 1: $2,400/acre</span>
+                    <span>Year 5: $4,800/acre</span>
+                  </div>
+                  <Progress value={60} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-purple-500" />
+                  Input Reduction
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span>Fertilizer</span>
+                    <Badge variant="secondary">-60%</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Pesticides</span>
+                    <Badge variant="secondary">-85%</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Water</span>
+                    <Badge variant="secondary">-30%</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          <Button
+            className="w-full bg-transparent"
+            variant="outline"
+            onClick={handleGenerateActionPlan}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Generate Action Plan
+          </Button>
+
+          <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+            <CardContent className="p-4">
+              <h4 className="font-medium text-sm mb-2">Ready to Deploy?</h4>
+              <p className="text-xs text-muted-foreground mb-3">
+                Generate your complete implementation kit with supply lists and
+                grant proposals.
+              </p>
+              <Button
+                size="sm"
+                className="w-full"
+                onClick={handleCreateDeploymentKit}
+              >
+                Create Deployment Kit
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
