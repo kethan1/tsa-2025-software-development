@@ -142,7 +142,11 @@ export function LandCanvas() {
 
   // Register video ref with simulation context
   useEffect(() => {
-    setVideoRef(videoRef);
+    if (videoRef.current != null) {
+      return;
+    }
+
+    setVideoRef(videoRef as React.RefObject<HTMLVideoElement>);
     return () => setVideoRef(null);
   }, [setVideoRef]);
 
