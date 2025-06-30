@@ -7,9 +7,8 @@ import { ThemeProvider } from "next-themes"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Next.js Community Starter",
-  description: "A modern Next.js starter with theme support",
-    generator: 'v0.dev'
+  title: "VerdeCore - Simulation Platform",
+  description: "VerdeCore is a simulation platform aimed at helping farmers and land managers make better decisions about their land.",
 }
 
 export default function RootLayout({
