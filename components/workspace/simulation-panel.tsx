@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,9 +24,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useSimulation } from "./simulation-context";
 
 export function SimulationPanel() {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef } =
-    useSimulation();
+  const [isPaused, setIsPaused] = useState(false);
+  const [simulationSpeed, setSimulationSpeed] = useState(1);
+  const animationRef = useRef<number | undefined>(undefined);
+  const currentYearRef = useRef<number>(2025);
+  const { currentYear, setCurrentYear, isPlaying, setIsPlaying, videoRef } = useSimulation();
   const { toast } = useToast();
 
   // Update video time when slider changes
@@ -40,7 +42,7 @@ export function SimulationPanel() {
 
   // Auto-advance year when playing
   useEffect(() => {
-    if (isPlaying && videoRef?.current) {
+    if (isPlaying && !isPaused && videoRef?.current) {
       const interval = setInterval(() => {
         if (videoRef.current && !videoRef.current.paused) {
           const currentTime = videoRef.current.currentTime;
@@ -50,45 +52,123 @@ export function SimulationPanel() {
           setCurrentYear(newYear);
 
           if (currentTime >= duration) {
+            // Stop simulation when video ends
+            if (videoRef.current) {
+              videoRef.current.pause();
+            }
             setIsPlaying(false);
-            setIsAnimating(false);
+            setIsPaused(false);
           }
         }
       }, 100);
 
       return () => clearInterval(interval);
     }
-  }, [isPlaying, videoRef, setCurrentYear, setIsPlaying, setIsAnimating]);
+  }, [isPlaying, isPaused, videoRef, setCurrentYear, setIsPlaying, setIsPaused]);
+
+  // Alternative animation for when video is not available
+  useEffect(() => {
+    if (isPlaying && !isPaused && !videoRef?.current) {
+      const animate = () => {
+        const nextYear = currentYearRef.current + simulationSpeed;
+        if (nextYear >= 2045) {
+          // Stop simulation when reaching end
+          setIsPlaying(false);
+          setIsPaused(false);
+          setCurrentYear(2045);
+          if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
+          }
+        } else {
+          currentYearRef.current = nextYear;
+          setCurrentYear(nextYear);
+          animationRef.current = requestAnimationFrame(animate);
+        }
+      };
+      animationRef.current = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isPlaying, isPaused, simulationSpeed, setCurrentYear, setIsPlaying, setIsPaused]);
+
+  // Update ref when currentYear changes
+  useEffect(() => {
+    currentYearRef.current = currentYear;
+  }, [currentYear]);
 
   const handleSliderChange = (value: number[]) => {
-    setCurrentYear(value[0]);
+    const newYear = value[0];
+    setCurrentYear(newYear);
+    
+    // Update video time if available
+    if (videoRef?.current) {
+      const yearProgress = (newYear - 2025) / 20;
+      const newTime = yearProgress * (videoRef.current.duration || 20);
+      videoRef.current.currentTime = newTime;
+    }
   };
 
-  const handlePlayAnimation = () => {
+  const handlePlaySimulation = () => {
     if (videoRef?.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-        setIsAnimating(false);
-        toast({
-          title: "Animation Paused",
-          description: "Time progression paused.",
-        });
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-        setIsAnimating(true);
-        toast({
-          title: "Animation Started",
-          description: "Playing time-based simulation...",
-        });
-      }
-    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+      setIsPaused(false);
       toast({
-        title: "No Video Available",
-        description: "Please import GIS data to start simulation.",
+        title: "Simulation Started",
+        description: "Playing time-based simulation...",
+      });
+    } else {
+      // Fallback animation without video
+      setIsPlaying(true);
+      setIsPaused(false);
+      toast({
+        title: "Simulation Started",
+        description: "Running time-based simulation...",
       });
     }
+  };
+
+  const handlePauseSimulation = () => {
+    if (videoRef?.current) {
+      videoRef.current.pause();
+    }
+    setIsPaused(!isPaused);
+    toast({
+      title: isPaused ? "Simulation Resumed" : "Simulation Paused",
+      description: isPaused ? "Continuing simulation..." : "Simulation paused.",
+    });
+  };
+
+  const handleStopSimulation = () => {
+    if (videoRef?.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    setIsPlaying(false);
+    setIsPaused(false);
+    setCurrentYear(2025);
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    toast({
+      title: "Simulation Stopped",
+      description: "Simulation has been reset to the beginning.",
+    });
+  };
+
+  const handleSpeedChange = (speed: number) => {
+    setSimulationSpeed(speed);
+    if (videoRef?.current) {
+      videoRef.current.playbackRate = speed;
+    }
+    toast({
+      title: "Speed Changed",
+      description: `Simulation speed set to ${speed}x`,
+    });
   };
 
   const handleGenerateActionPlan = () => {
@@ -126,7 +206,7 @@ export function SimulationPanel() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Simulator Options</h2>
+        <h2 className="text-lg font-semibold mb-2">Regen Simulator</h2>
         <p className="text-sm text-muted-foreground">
           Time-based forecasting engine powered by real environmental data
         </p>
@@ -153,21 +233,17 @@ export function SimulationPanel() {
               max={2045}
               step={1}
               onValueChange={handleSliderChange}
-              disabled={isPlaying}
+              disabled={isPlaying && !isPaused}
             />
+
+            {/* Control Buttons */}
             <div className="flex justify-center gap-2">
-              {/* <Button
-                size="sm"
-                className="flex-1"
-                onClick={handlePlayAnimation}
-              >
-                {isAnimating ? "Pause Animation" : "Play Animation"}
-              </Button> */}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePlayAnimation}
-                // disabled={isSimulating && !isPaused}
+                onClick={handlePlaySimulation}
+                disabled={isPlaying && !isPaused}
+                title="Start Simulation"
               >
                 <Play className="w-4 h-4 mr-2" />
                 Simulate
@@ -176,17 +252,37 @@ export function SimulationPanel() {
               <Button
                 variant="outline"
                 size="sm"
-                // onClick={handlePause}
-                // disabled={!isSimulating}
+                onClick={handlePauseSimulation}
+                disabled={!isPlaying}
+                title="Pause/Resume Simulation"
               >
                 <Pause className="w-4 h-4" />
               </Button>
 
-              <Button variant="outline" size="sm"
-              // onClick={handleReset}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleStopSimulation}
+                title="Stop and Reset Simulation"
               >
                 <RotateCcw className="w-4 h-4" />
               </Button>
+            </div>
+
+            {/* Speed Controls */}
+            <div className="flex justify-center gap-1">
+              {[0.5, 1, 2, 4].map((speed) => (
+                <Button
+                  key={speed}
+                  variant={simulationSpeed === speed ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleSpeedChange(speed)}
+                  disabled={!isPlaying || isPaused}
+                  className="w-12 h-8 text-xs"
+                >
+                  {speed}x
+                </Button>
+              ))}
             </div>
           </div>
         </CardContent>
@@ -310,15 +406,6 @@ export function SimulationPanel() {
         >
           <Download className="w-4 h-4 mr-2" />
           Generate Action Plan
-        </Button>
-
-        <Button
-          className="w-full bg-transparent"
-          variant="outline"
-          onClick={handleViewEarthMirror}
-        >
-          <Eye className="w-4 h-4 mr-2" />
-          View EarthMirror
         </Button>
 
         <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">

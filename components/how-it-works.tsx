@@ -83,7 +83,9 @@ export function HowItWorks() {
                     <step.icon className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 group-hover:text-green-600 transition-colors duration-300">{step.title}</h3>
+                    <h3 className="text-xl font-semibold mb-2 group-hover:text-green-600 transition-colors duration-300">
+                      <Link href={step.href}>{step.title}</Link>
+                    </h3>
                     <p className="text-muted-foreground mb-3">{step.description}</p>
                     <div className="flex items-center justify-between">
                       <Link 

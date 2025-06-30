@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Save, Share2, Play, Pause, RotateCcw, Download, Settings, HelpCircle, Keyboard } from "lucide-react"
+import { Save, Share2, Download, HelpCircle, Keyboard } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import {
@@ -28,8 +27,6 @@ const keyboardShortcuts = [
 ]
 
 export function WorkspaceHeader() {
-  const [isSimulating, setIsSimulating] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
   const { toast } = useToast()
 
@@ -70,32 +67,6 @@ export function WorkspaceHeader() {
     }
   }
 
-  const handleSimulate = () => {
-    setIsSimulating(true)
-    setIsPaused(false)
-    toast({
-      title: "Simulation Started",
-      description: "Running regenerative impact simulation...",
-    })
-  }
-
-  const handlePause = () => {
-    setIsPaused(!isPaused)
-    toast({
-      title: isPaused ? "Simulation Resumed" : "Simulation Paused",
-      description: isPaused ? "Continuing simulation..." : "Simulation paused.",
-    })
-  }
-
-  const handleReset = () => {
-    setIsSimulating(false)
-    setIsPaused(false)
-    toast({
-      title: "Simulation Reset",
-      description: "Simulation has been reset to initial state.",
-    })
-  }
-
   const handleDeployKit = () => {
     toast({
       title: "Deployment Kit Generated",
@@ -106,13 +77,6 @@ export function WorkspaceHeader() {
     link.href = '#'
     link.download = 'verdecore-deployment-kit.pdf'
     link.click()
-  }
-
-  const handleSettings = () => {
-    toast({
-      title: "Settings",
-      description: "Settings panel would open here.",
-    })
   }
 
   return (
@@ -145,10 +109,6 @@ export function WorkspaceHeader() {
           <Button variant="outline" size="sm" onClick={handleDeployKit}>
             <Download className="w-4 h-4 mr-2" />
             Deploy Kit
-          </Button>
-
-          <Button variant="ghost" size="sm" onClick={handleSettings}>
-            <Settings className="w-4 h-4" />
           </Button>
 
           <Dialog>

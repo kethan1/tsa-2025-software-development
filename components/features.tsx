@@ -107,7 +107,7 @@ export function Features() {
                   <Badge variant="secondary">{feature.badge}</Badge>
                 </div>
                 <CardTitle className="text-xl group-hover:text-green-600 transition-colors duration-300">
-                  {feature.title}
+                  <Link href={feature.href}>{feature.title}</Link>
                 </CardTitle>
                 <CardDescription className="font-medium text-green-600 dark:text-green-400">
                   {feature.subtitle}

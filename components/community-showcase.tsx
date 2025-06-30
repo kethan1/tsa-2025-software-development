@@ -131,12 +131,13 @@ export function CommunityShowcase() {
         </div>
 
         <div className="text-center">
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             variant="outline"
             onClick={handleExploreAllStrategies}
+            asChild
           >
-            Explore All Strategies
+            <Link href="/community">Explore All Strategies</Link>
           </Button>
         </div>
       </div>

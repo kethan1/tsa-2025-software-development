@@ -1,6 +1,5 @@
 import { WorkspaceHeader } from "@/components/workspace/workspace-header"
 import { LandCanvas } from "@/components/workspace/land-canvas"
-import { ToolPalette } from "@/components/workspace/tool-palette"
 import { SimulationPanel } from "@/components/workspace/simulation-panel"
 import { SimulationProvider } from "@/components/workspace/simulation-context"
 
@@ -11,8 +10,6 @@ export default function WorkspacePage() {
         <WorkspaceHeader />
 
         <div className="flex-1 flex overflow-hidden">
-          
-
           {/* Main Canvas */}
           <div className="flex-1 relative">
             <LandCanvas />
